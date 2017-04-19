@@ -1,0 +1,2 @@
+LogLevel=debug
+CrawlerModules=./crawler/modules
