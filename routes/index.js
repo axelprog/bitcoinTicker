@@ -1,5 +1,7 @@
-let express = require('express');
-let router = express.Router();
+const express = require('express');
+const router = express.Router();
+
+const crawler = require('../crawler');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -7,7 +9,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/crawl/all', () => {
-    
+    crawler.crawlAll();
 });
 
 module.exports = router;

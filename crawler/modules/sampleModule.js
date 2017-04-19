@@ -1,11 +1,24 @@
-class Module{
-    constructor(){
-      this.name = 'sampleModule';
-    }
+const colors = require('colors');
 
-    parse(){
-
+class Module {
+    static parse() {
+        setTimeout(() => {
+            process.send({
+                child: process.pid,
+                result: 'test data'
+            });
+            process.disconnect();
+        }, 3000);
     }
 }
 
-module.exports = new Module();
+Module.moduleName = 'sampleModule';
+Module.expires = Date('11/1/17');
+
+module.exports = Module;
+
+process.on('message', (data) => {
+    if (data.start) {
+        Module.parse();
+    }
+});

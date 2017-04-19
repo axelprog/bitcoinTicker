@@ -1,6 +1,7 @@
-let fs = require('fs');
-let path = require('path');
-var colors = require('colors');
+const fs = require('fs');
+const path = require('path');
+const colors = require('colors');
+const child_process = require('child_process');
 
 /*environments*/
 const moduleStorage = process.env.CrawlerModules ? path.join(__dirname, '../', process.env.CrawlerModules) : path.join(__dirname, './modules');
@@ -27,15 +28,41 @@ class Crawler {
                 const moduleName = splitName.join('.');
 
                 const module = require(path.join(moduleStorage, moduleName));
-                this.moduleLib[module.name || moduleName] = module;
+                let name = module.moduleName;
+                if (!name || this.moduleLib[name]) {
+                    name = moduleName;
+                }
+                this.moduleLib[name] = {
+                    path: path.join(moduleStorage, moduleName)
+                };
             }
         });
 
-        if (process.env.LogLevel === 'debug') {
-            console.info(colors.blue('Loaded crawler modules ', Object.keys(this.moduleLib).length));
+        if (process.env.DebugInfo) {
+            console.log(colors.blue('Loaded crawler modules ', Object.keys(this.moduleLib).length));
             Object.keys(this.moduleLib).forEach((item) => {
-                console.info(colors.blue(colors.underline('\tmodule name'), item));
+                console.log(colors.blue(colors.underline('\tmodule name'), item));
             });
+        }
+
+        this.crawlAll();
+    }
+
+    crawlAll() {
+        Object.keys(this.moduleLib).forEach((moduleName) => {
+            this.crawl(moduleName);
+        });
+    }
+
+    crawl(moduleName) {
+        const module = this.moduleLib[moduleName];
+        if (module) {
+            const child = child_process.fork(module.path);
+            child.send({start: true});
+            child.on('message', (data) => {
+                console.log(`------>${JSON.stringify(data)}`);
+            })
+            // module.parse();
         }
     }
 }

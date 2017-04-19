@@ -4,6 +4,6 @@ npm run start
 
 **.env example**
 
-LogLevel=debug
+DebugInfo=true
 
 CrawlerModules=./crawler/modules
