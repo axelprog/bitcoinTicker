@@ -4,7 +4,11 @@ class Module {
     static parse() {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                resolve({message: 'all done'});
+                resolve({
+                    bitcoinToUsd: 1,
+                    bitcoinToEur: 2,
+                    usdToEur: 3
+                });
             }, 3000);
         });
 

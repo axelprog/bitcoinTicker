@@ -2,11 +2,15 @@ const fs = require('fs');
 const path = require('path');
 const colors = require('colors');
 const child_process = require('child_process');
+const storage = require('../dataStorage');
+const MessageType = require('./moduleMessage').MessageType;
+
+const needLog = process.env.DebugInfo; //log level from .env
 
 /*environments*/
 const moduleStorage = process.env.CrawlerModules ? path.join(__dirname, '../', process.env.CrawlerModules) : path.join(__dirname, './modules');
 /**
- * main crawler for currency value
+ * the main crawler for currency value
  */
 class Crawler {
     constructor() {
@@ -38,7 +42,7 @@ class Crawler {
             }
         });
 
-        if (process.env.DebugInfo) {
+        if (needLog) {
             console.log(colors.cyan('Loaded crawler modules ', Object.keys(this.moduleLib).length));
             Object.keys(this.moduleLib).forEach((item) => {
                 console.log(colors.cyan(colors.underline('\tmodule name'), item));
@@ -48,31 +52,48 @@ class Crawler {
         this.crawlAll();
     }
 
+    /**
+     * starts a crawling process for all the modules
+     */
     crawlAll() {
         Object.keys(this.moduleLib).forEach((moduleName) => {
             this.crawl(moduleName);
         });
     }
 
+    /**
+     * starts a crawling process for one module
+     * @param moduleName - aname of module for the crawling
+     */
     crawl(moduleName) {
         const module = this.moduleLib[moduleName];
         if (module) {
             // const child = child_process.fork(module.path);
-            const child = child_process.fork( path.join(__dirname, 'baseWorker'), [module.path]);
+            const child = child_process.fork(path.join(__dirname, 'baseWorker'), [module.path]);
 
-            if (process.env.DebugInfo) {
+            if (needLog) {
                 console.log(`Module ${moduleName} was ran`.cyan);
             }
 
-            child.on('message', (data) => {
-                console.log(`Log from module`.yellow, data.name.underline, JSON.stringify(data).green);
+            child.on('message', (message) => {
+                if (message.type === MessageType.data) {
+                    storage.updateData(message.name, message.data.bitcoinToUsd, message.data.bitcoinToEur, message.data.usdToEur);
+
+                    if (needLog) {
+                        console.log(`Log from storage ${storage.getBestBitcoinToEur()} ${storage.getBestBitcoinToUsd()} ${storage.getBestUsdToEur()}`.magenta);
+                    }
+                }
+
+                if (needLog) {
+                    console.log(`Log from module`.yellow, message.name.underline, JSON.stringify(message).green);
+                }
             });
 
             child.on('error', (data) => {
                 console.error(`Module ${moduleName} return error ${JSON.stringify(data)}`.red);
             });
 
-            if (process.env.DebugInfo) {
+            if (needLog) {
                 child.on('disconnect', () => {
                     console.log(`Module ${moduleName} has disconnected`.cyan);
                 });

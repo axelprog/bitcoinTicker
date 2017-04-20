@@ -9,7 +9,12 @@ DebugInfo=true
 CrawlerModules=./crawler/modules
 
 **storage interface**
-class{
-init(){}
+class Storage {
+    init(){}
+    setDataBySource(name, BitcoinToUsd, BitcoinToEur, UsdToEur){}
+    getDataBySource(name){}
+    getBestBitcoinToUsd(){}
+    getBestBitcoinToEur(){}
+    getBestUsdToEur(){}
 }
 **crawler module interface**
