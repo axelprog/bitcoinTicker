@@ -7,3 +7,9 @@ npm run start
 DebugInfo=true
 
 CrawlerModules=./crawler/modules
+
+**storage interface**
+class{
+init(){}
+}
+**crawler module interface**

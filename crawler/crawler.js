@@ -39,9 +39,9 @@ class Crawler {
         });
 
         if (process.env.DebugInfo) {
-            console.log(colors.blue('Loaded crawler modules ', Object.keys(this.moduleLib).length));
+            console.log(colors.cyan('Loaded crawler modules ', Object.keys(this.moduleLib).length));
             Object.keys(this.moduleLib).forEach((item) => {
-                console.log(colors.blue(colors.underline('\tmodule name'), item));
+                console.log(colors.cyan(colors.underline('\tmodule name'), item));
             });
         }
 
@@ -57,12 +57,27 @@ class Crawler {
     crawl(moduleName) {
         const module = this.moduleLib[moduleName];
         if (module) {
-            const child = child_process.fork(module.path);
-            child.send({start: true});
+            // const child = child_process.fork(module.path);
+            const child = child_process.fork( path.join(__dirname, 'baseWorker'), [module.path]);
+
+            if (process.env.DebugInfo) {
+                console.log(`Module ${moduleName} was ran`.cyan);
+            }
+
             child.on('message', (data) => {
-                console.log(`------>${JSON.stringify(data)}`);
-            })
-            // module.parse();
+                console.log(`Log from module`.yellow, data.name.underline, JSON.stringify(data).green);
+            });
+
+            child.on('error', (data) => {
+                console.error(`Module ${moduleName} return error ${JSON.stringify(data)}`.red);
+            });
+
+            if (process.env.DebugInfo) {
+                child.on('disconnect', () => {
+                    console.log(`Module ${moduleName} has disconnected`.cyan);
+                });
+            }
+
         }
     }
 }
