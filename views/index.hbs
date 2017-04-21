@@ -1,2 +1,17 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<script>
+    //It is a good way for reload for the simple page.
+    // If it will a part of a complicated system best way will use API or socket connection
+    setTimeout(() => {
+        location.reload(true)
+    }, 1000);
+</script>
+<h1>Bitcoin values</h1>
+<div>
+    <span>BTC/USD: <b>{{btcToUsd}}</b> </span>
+    <span>USD/EUR: <b>{{usdToEur}}</b> </span>
+    <span>BTC/EUR: <b>{{btcToEur}}</b> </span>
+    <span><b><i>Active sources:</i></b> </span>
+    <span>BTC/USD: <b>{{btcToUsdSourcesInfo}}</b> </span>
+    <span>USD/EUR: <b>{{usdToEurSourcesInfo}}</b> </span>
+    <span>BTC/EUR: <b>{{btcToEurSourcesInfo}}</b> </span>
+</div>

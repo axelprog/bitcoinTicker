@@ -1,6 +1,6 @@
 /**
  * simple data storage. It stores data in memory. It is not a good solution for real project, but a quick for demo.
- * iT can't store data between sessions. Use some database for better operations with the data
+ * It can't store data between sessions. Use some database for better operations with the data
  */
 class MemoryStorage {
     /**
@@ -42,7 +42,7 @@ class MemoryStorage {
      * @returns {number}
      */
     getBestBitcoinToUsd() {
-        return Math.max(...Object.values(this.storage).map(item => item.BitcoinToUsd));
+        return Math.max(...Object.values(this.storage).map(item => item.bitcoinToUsd));
     }
 
     /**
@@ -50,7 +50,7 @@ class MemoryStorage {
      * @returns {number}
      */
     getBestBitcoinToEur() {
-        return Math.max(...Object.values(this.storage).map(item => item.BitcoinToEur));
+        return Math.max(...Object.values(this.storage).map(item => item.bitcoinToEur));
     }
 
     /**
@@ -58,8 +58,41 @@ class MemoryStorage {
      * @returns {number}
      */
     getBestUsdToEur() {
-        return Math.max(...Object.values(this.storage).map(item => item.UsdToEur));
+        return Math.max(...Object.values(this.storage).map(item => item.usdToEur));
     }
+
+    /**
+     * returns total count of the sources
+     * @returns {Number} - sources count
+     */
+    getSourceCount(){
+        return Object.values(this.storage).length;
+    }
+
+    /**
+     * returns count of sources for value of bitcoin to usd
+     * @returns {Number} - count of sources
+     */
+    getBitcoinToUsdSources(){
+        return Object.values(this.storage).filter(item => !!item.bitcoinToUsd).length;
+    }
+
+    /**
+     * returns count of sources for value of usd to  euro
+     * @returns {Number} - count of sources
+     */
+    getUsdToEurSources(){
+        return Object.values(this.storage).filter(item => !!item.bitcoinToUsd).length;
+    }
+
+    /**
+     * returns count of sources for value of bitcoin to euro
+     * @returns {Number} - count of sources
+     */
+    getBitcoinToEurSources(){
+        return Object.values(this.storage).filter(item => !!item.bitcoinToUsd).length;
+    }
+
 }
 
 module.exports = new MemoryStorage();

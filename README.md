@@ -2,6 +2,8 @@
 
 npm run start
 
+http://localhost:3000/
+
 **.env example**
 
 DebugInfo=true
@@ -16,5 +18,9 @@ class Storage {
     getBestBitcoinToUsd(){}
     getBestBitcoinToEur(){}
     getBestUsdToEur(){}
+    getSourceCount(){}
+    getBitcoinToUsdSources(){}
+    getUsdToEurSources(){}
+    getBitcoinToEurSources(){}
 }
 **crawler module interface**

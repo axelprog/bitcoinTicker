@@ -51,6 +51,30 @@ class DataStorage {
     getBestUsdToEur() {
         return this.storage.getBestUsdToEur();
     }
+
+    /**
+     * return info about sources for value of  bitcoin to usd
+     * @returns {string} - info
+     */
+    getBitcoinToUsdSourcesInfo(){
+        return `${storage.getBitcoinToUsdSources()} of ${storage.getSourceCount()}`;
+    }
+
+    /**
+     * return info about sources for value of usd to euro
+     * @returns {string} - info
+     */
+    getUsdToEurSourcesInfo(){
+        return `${storage.getUsdToEurSources()} of ${storage.getSourceCount()}`;
+    }
+
+    /**
+     * return info about sources for value of bitcoin to euro
+     * @returns {string} - info
+     */
+    getBitcoinToEurSourcesInfo(){
+        return `${storage.getBitcoinToEurSources()} of ${storage.getSourceCount()}`;
+    }
 }
 
 module.exports = new DataStorage();

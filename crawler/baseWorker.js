@@ -7,7 +7,7 @@ const modulePath = process.argv[2];
  */
 
 if (!modulePath) { //exit on the error
-    process.send(new ModuleMessage('log', module.name, `Module ${modulePath} doesn't have module path`));
+    process.send(new ModuleMessage('log', module.moduleName, `Module ${modulePath} doesn't have module path`));
     process.disconnect();
 }
 
@@ -15,24 +15,24 @@ if (!modulePath) { //exit on the error
 module = require(modulePath);
 
 //send log for the debug
-process.send(new ModuleMessage('log', module.name, `Module ${modulePath} was loaded`));
+process.send(new ModuleMessage('log', module.moduleName, `Module ${modulePath} was loaded`));
 
 //run the parsing process
 module.parse().then((result) => {
     //on the success end
-    process.send(new ModuleMessage('data', module.name, result));
-    process.send(new ModuleMessage('log', module.name, `Module ${modulePath} has finished the work. Result: ${JSON.stringify(result)}`));
+    process.send(new ModuleMessage('data', module.moduleName, result));
+    process.send(new ModuleMessage('log', module.moduleName, `Module ${modulePath} has finished the work. Result: ${JSON.stringify(result)}`));
     process.disconnect();
 }, (reject) => {
     //on the error end
-    process.send(new ModuleMessage('log', module.name, `Module ${modulePath} return error. Result: ${JSON.stringify(reject)}`));
+    process.send(new ModuleMessage('log', module.moduleName, `Module ${modulePath} return error. Result: ${JSON.stringify(reject)}`));
     process.disconnect();
 })
     .catch((reject) => {
         //on the error
-        process.send(new ModuleMessage('error', module.name, `Module ${modulePath} return error. Result: ${JSON.stringify(reject)}`));
+        process.send(new ModuleMessage('error', module.moduleName, `Module ${modulePath} return error. Result: ${JSON.stringify(reject)}`));
         process.disconnect();
     });
 
 //send log for the debug
-process.send(new ModuleMessage('log', module.name, `Parsing was began`));
+process.send(new ModuleMessage('log', module.moduleName, `Parsing was began`));
