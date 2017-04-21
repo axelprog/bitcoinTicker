@@ -85,7 +85,7 @@ class MemoryStorage {
      * @returns {Number} - count of sources
      */
     getUsdToEurSources(){
-        return Object.values(this.storage).filter(item => !!item.bitcoinToUsd).length;
+        return Object.values(this.storage).filter(item => !!item.bitcoinToEur).length;
     }
 
     /**
@@ -93,7 +93,7 @@ class MemoryStorage {
      * @returns {Number} - count of sources
      */
     getBitcoinToEurSources(){
-        return Object.values(this.storage).filter(item => !!item.bitcoinToUsd).length;
+        return Object.values(this.storage).filter(item => !!item.usdToEur).length;
     }
 
 }

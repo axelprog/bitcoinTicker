@@ -10,9 +10,9 @@ class Module {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve({
-                    bitcoinToUsd: 1,
-                    bitcoinToEur: 2,
-                    usdToEur: 3
+                    bitcoinToUsd: 0,
+                    bitcoinToEur: 0,
+                    usdToEur: 0
                 });
             }, 3000);
         });
@@ -24,6 +24,6 @@ class Module {
  * Module name.
  */
 Module.moduleName = 'sampleModule';
-Module.expires = new Date('11/1/17');
+Module.expires = 4000; // in milliseconds
 
 module.exports = Module;

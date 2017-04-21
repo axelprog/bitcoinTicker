@@ -40,7 +40,7 @@ class Storage {
 }
 ```
 
-####crawler module interface
+####Crawler module interface
 The application searches and loads modules automatically. Every module must contains the next methods
 
 ```javascript
@@ -60,3 +60,5 @@ Module.moduleName = 'sampleModule';
 ```
 `parse` must returns a promise that must resolves with an objeckt in the next format
 `{ bitcoinToUsd: 1, bitcoinToEur: 2, usdToEur: 3 }`
+
+Also you can copy and modify file `sampleModule.js` 
