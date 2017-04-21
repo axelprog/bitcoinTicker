@@ -42,7 +42,8 @@ class MemoryStorage {
      * @returns {number}
      */
     getBestBitcoinToUsd() {
-        return Math.max(...Object.values(this.storage).map(item => item.bitcoinToUsd));
+        let data = Math.max(...Object.values(this.storage).map(item => item.bitcoinToUsd));
+        return data === -Infinity ? 0 : data;
     }
 
     /**
@@ -50,7 +51,8 @@ class MemoryStorage {
      * @returns {number}
      */
     getBestBitcoinToEur() {
-        return Math.max(...Object.values(this.storage).map(item => item.bitcoinToEur));
+        let data =  Math.max(...Object.values(this.storage).map(item => item.bitcoinToEur));
+        return data === -Infinity ? 0 : data;
     }
 
     /**
@@ -58,7 +60,8 @@ class MemoryStorage {
      * @returns {number}
      */
     getBestUsdToEur() {
-        return Math.max(...Object.values(this.storage).map(item => item.usdToEur));
+        let data =  Math.max(...Object.values(this.storage).map(item => item.usdToEur));
+        return data === -Infinity ? 0 : data;
     }
 
     /**
