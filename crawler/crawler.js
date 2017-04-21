@@ -25,31 +25,31 @@ class Crawler {
 
         fs.readdirSync(moduleStorage).forEach((module) => {
             const splitName = module.split(".");
-            const isCrawlModule = splitName.length > 0 && splitName[splitName.length - 1] === 'js';
+            const isCrawlModule = splitName.length > 0 && splitName[splitName.length - 1] === 'js'; // check the file is a js-file
 
             if (isCrawlModule) {
                 splitName.pop(); //remove file extension
                 const moduleName = splitName.join('.');
 
-                const module = require(path.join(moduleStorage, moduleName));
+                const module = require(path.join(moduleStorage, moduleName)); // load module
                 let name = module.moduleName;
                 if (!name || this.moduleLib[name]) {
                     name = moduleName;
                 }
-                this.moduleLib[name] = {
+                this.moduleLib[name] = { //save the module information
                     path: path.join(moduleStorage, moduleName)
                 };
             }
         });
 
-        if (needLog) {
+        if (needLog) { //logging about loaded modules
             console.log(colors.cyan('Loaded crawler modules ', Object.keys(this.moduleLib).length));
             Object.keys(this.moduleLib).forEach((item) => {
                 console.log(colors.cyan(colors.underline('\tmodule name'), item));
             });
         }
 
-        this.crawlAll();
+        this.crawlAll(); // run crawling after reload
     }
 
     /**
@@ -68,15 +68,17 @@ class Crawler {
     crawl(moduleName) {
         const module = this.moduleLib[moduleName];
         if (module) {
-            // const child = child_process.fork(module.path);
-            const child = child_process.fork(path.join(__dirname, 'baseWorker'), [module.path]);
+
+            const child = child_process.fork(path.join(__dirname, 'baseWorker'), [module.path]); // create a new thread
 
             if (needLog) {
                 console.log(`Module ${moduleName} was ran`.cyan);
             }
 
+            //subscribes to messages
             child.on('message', (message) => {
                 if (message.type === MessageType.data) {
+                    // if is data message then store it
                     storage.updateData(message.name, message.data.bitcoinToUsd, message.data.bitcoinToEur, message.data.usdToEur);
 
                     if (needLog) {
@@ -89,11 +91,12 @@ class Crawler {
                 }
             });
 
+            //subscribes to error messages
             child.on('error', (data) => {
                 console.error(`Module ${moduleName} return error ${JSON.stringify(data)}`.red);
             });
 
-            if (needLog) {
+            if (needLog) { //gog for the module disconnection
                 child.on('disconnect', () => {
                     console.log(`Module ${moduleName} has disconnected`.cyan);
                 });
