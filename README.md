@@ -12,7 +12,7 @@ It isn't a good solution but it is quick for the demonstration
 Base page is opened by an address http://localhost:3000/
 
 
-###.env example
+### .env example
 You can create `.env` file for set base environments (you can rename `.sampleEnv` to `.env`)
 ```
 DebugInfo=true
@@ -28,7 +28,7 @@ _FreezeTime_ - set freeze time for a crawl thread in milliseconds
 
 _ThreadWatcherTime_ - set time for time watcher cycle
 
-###Storage module interface
+### Storage module interface
 ```javascript
 
 class Storage {
@@ -45,7 +45,7 @@ class Storage {
 }
 ```
 
-###Crawler module interface
+### Crawler module interface
 The application searches and loads modules automatically. Every module must contains the next methods
 
 ```javascript
