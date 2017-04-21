@@ -5,7 +5,7 @@ const child_process = require('child_process');
 const storage = require('../dataStorage');
 const MessageType = require('./moduleMessage').MessageType;
 
-const needLog = process.env.DebugInfo; //log level from .env
+const needLog = process.env.DebugInfo || false; //log level from .env
 
 /*environments*/
 const moduleStorage = process.env.CrawlerModules ? path.join(__dirname, '../', process.env.CrawlerModules) : path.join(__dirname, './modules');
@@ -18,6 +18,7 @@ const threadStatus = {
     active: 'active', //thread running now
     inactive: 'inactive', //thread never ran
     broken: 'broken', //thread have error
+    freeze: 'freeze', //thread was killed after freeze
     done: 'done' //thread successfully done his work
 };
 
@@ -60,12 +61,11 @@ class Crawler {
             }
         });
 
-        if (needLog) { //logging about loaded modules
-            console.log(colors.cyan('Loaded crawler modules ', Object.keys(this.moduleLib).length));
-            Object.keys(this.moduleLib).forEach((item) => {
-                console.log(colors.cyan(colors.underline('\tmodule name'), item));
-            });
-        }
+        //logging about loaded modules
+        console.log(colors.cyan('Loaded crawler modules ', Object.keys(this.moduleLib).length));
+        Object.keys(this.moduleLib).forEach((item) => {
+            console.log(colors.cyan(colors.underline('\tmodule name'), item));
+        });
 
         // this.crawlAll(); // run crawling after reload
         this.initThreadWatcher();
@@ -74,14 +74,23 @@ class Crawler {
     /**
      * method that starts a cycle of the source processing
      */
-    initThreadWatcher(){
-         this.threadWatcher = setInterval(() => {
-            Object.values(this.moduleLib).forEach((module) =>{
-                switch (module.status){
+    initThreadWatcher() {
+        if (this.threadWatcher) {
+            this.stopThreadWatcher();
+        }
+
+        const freezeeTime = process.env.FreezeTime || 10000;
+
+        this.threadWatcher = setInterval(() => {
+            Object.values(this.moduleLib).forEach((module) => {
+                switch (module.status) {
                     case threadStatus.active:
-                        if((Date.now() - module.lastStart ) > process.env.FreezeTime){
-                            module.thread.kill('SIGHUP');
+                        if ((Date.now() - module.lastStart ) > freezeeTime) {
+                            module.thread && module.thread.kill('SIGHUP');
                             module.thread = null;
+                            module.status = threadStatus.freeze;
+
+                            console.warn(`Module ${module.name} was killed after freeze`);
                         }
                         break;
 
@@ -89,12 +98,13 @@ class Crawler {
                         this.crawl(module.name);
                         break;
 
+                    case threadStatus.freeze:
                     case threadStatus.broken:
                         this.crawl(module.name);
                         break;
 
                     case threadStatus.done:
-                        if((Date.now() - module.lastParse ) > module.expire){
+                        if ((Date.now() - module.lastParse ) > module.expire) {
                             this.crawl(module.name);
                         }
                         break;
@@ -136,38 +146,7 @@ class Crawler {
                 if (needLog) {
                     console.log(`Module ${moduleName} was run`.cyan);
                 }
-
-                //subscribes to messages
-                child.on('message', (message) => {
-                    if (message.type === MessageType.data) {
-                        // if is data message then store it
-                        storage.updateData(message.name, message.data.bitcoinToUsd, message.data.bitcoinToEur, message.data.usdToEur);
-
-                        if (needLog) {
-                            console.log(`Log from storage ${storage.getBestBitcoinToEur()} ${storage.getBestBitcoinToUsd()} ${storage.getBestUsdToEur()}`.magenta);
-                        }
-                    }
-
-                    if (needLog) {
-                        console.log(`Log from module`.yellow, message.name.underline, JSON.stringify(message).green);
-                    }
-                });
-
-                //subscribes to error messages
-                child.on('error', (data) => {
-                    console.error(`Module ${moduleName} return error ${JSON.stringify(data)}`.red);
-                    module.status = threadStatus.broken;
-                });
-                child.on('disconnect', () => {
-                    module.status = threadStatus.done;
-                    module.thread = null;
-                    module.lastParse = Date.now();
-
-                    if (needLog) { //gog for the module disconnection
-                        console.log(`Module ${moduleName} has been disconnected`.cyan);
-                    }
-                });
-
+                this.subscribeThread(child, module);
 
             } catch (error) {
                 module.status = threadStatus.broken;
@@ -178,6 +157,45 @@ class Crawler {
                 }
             }
         }
+    }
+
+    /**
+     * subscribes for messages from the child thread
+     * @param {object} child -  instance of child to subscribe
+     * @param moduleName - name of module
+     */
+    subscribeThread(child, module) {
+        const moduleName = module.name;
+        //subscribes to messages
+        child.on('message', (message) => {
+            if (message.type === MessageType.data) {
+                // if is data message then store it
+                storage.updateData(message.name, message.data.bitcoinToUsd, message.data.bitcoinToEur, message.data.usdToEur);
+
+                if (needLog) {
+                    console.log(`Log from storage ${storage.getBestBitcoinToEur()} ${storage.getBestBitcoinToUsd()} ${storage.getBestUsdToEur()}`.magenta);
+                }
+            }
+
+            if (needLog) {
+                console.log(`Log from module`.yellow, message.name.underline, JSON.stringify(message).green);
+            }
+        });
+
+        //subscribes to error messages
+        child.on('error', (data) => {
+            console.error(`Module ${moduleName} return error ${JSON.stringify(data)}`.red);
+            module.status = threadStatus.broken;
+        });
+        child.on('disconnect', () => {
+            module.status = threadStatus.done;
+            module.thread = null;
+            module.lastParse = Date.now();
+
+            if (needLog) { //gog for the module disconnection
+                console.log(`Module ${moduleName} has been disconnected`.cyan);
+            }
+        });
     }
 }
 
