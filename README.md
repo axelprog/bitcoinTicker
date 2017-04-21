@@ -1,13 +1,15 @@
 # bitcoinTicker
 
-A simple demo for crawler information with a module system of crawlers and data storage.   
+A simple demo for crawler information with a module system of crawlers and data storage. 
+It uses a simple memory storage for the demo of storage module. Also it uses simple location.reload() for the index page. 
+It isn't a good solution but it is quick for the demonstration
 
 #### install & run
-`npm install`
+`npm install` - for install all the packages  
 
-`npm run start`
+`npm run start` - for run the appilcation 
 
-Base page is opens by address http://localhost:3000/
+Base page is opened by an address http://localhost:3000/
 
 
 ####.env example
