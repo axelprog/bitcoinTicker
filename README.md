@@ -13,15 +13,20 @@ Base page is opened by an address http://localhost:3000/
 
 
 ####.env example
-You can create `.env` file for set base environments 
+You can create `.env` file for set base environments (you can rename `.sampleEnv` to `.env`)
 ```
 DebugInfo=true
 CrawlerModules=./crawler/modules
+ThreadWatcherTime = 5000
+FreezeTime = 5000
 ```
 _DebugInfo_ - allow to show more logs
 
 _CrawlerModules_ - sets a path to crawler modules
 
+_FreezeTime_ - set freeze time for a crawl thread in milliseconds
+
+_ThreadWatcherTime_ - set time for time watcher cycle
 
 ####Storage module interface
 ```javascript
@@ -57,8 +62,13 @@ class Module {
 }
 
 Module.moduleName = 'sampleModule';
+Module.expires = 6000;
 ```
-`parse` must returns a promise that must resolves with an objeckt in the next format
+`parse` is the main method for the parsing sources. It must returns a promise that must resolves with an objeckt in the next format
 `{ bitcoinToUsd: 1, bitcoinToEur: 2, usdToEur: 3 }`
+
+`moduleName` - is field contain module name. It must be unique because use as a module id.
+
+ `expires` - time of an data expiration for this module in miliseconds 
 
 Also you can copy and modify file `sampleModule.js` 

@@ -28,7 +28,7 @@ class Module {
 
                     let pageBody = cheerio.load(body);
                     result.bitcoinToUsd = parseFloat(pageBody('#ticker-BTC-USD-price').eq(0).text());
-                    result.usdToEur =  parseFloat(pageBody('#ticker-BTC-EUR-price').eq(0).text());
+                    result.bitcoinToEur =  parseFloat(pageBody('#ticker-BTC-EUR-price').eq(0).text());
                     return resolve(result);
                 });
         });
@@ -43,5 +43,3 @@ Module.moduleName = 'cexio';
 Module.expires = 1 * 60 * 1000; // (minutes * seconds * milliseconds) in milliseconds
 
 module.exports = Module;
-
-Module.parse().then((data) => {console.log(JSON.stringify(data))});
