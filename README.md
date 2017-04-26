@@ -72,3 +72,12 @@ Module.expires = 6000;
  `expires` - time of an data expiration for this module in miliseconds 
 
 Also you can copy and modify file `sampleModule.js` 
+
+
+
+##### main task 
+
+Develop a simple bitcoin realtime ticker in GoLang that shows in a single text line bitcoin value in Euro based on auto selection between 2 or more bitcoin price feeds and 2 and more currency rates feeds.
+Feel free to use any feed you like. Completed code we expect to see in GitHub or BitBucket.
+
+Example output line:BTC/USD: 600   EUR/USD: 1.05   BTC/EUR: 550 Active sources: BTC/USD (3 of 3)  EUR/USD (2 of 3)
