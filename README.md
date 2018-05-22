@@ -64,7 +64,7 @@ class Module {
 Module.moduleName = 'sampleModule';
 Module.expires = 6000;
 ```
-`parse` is the main method for the parsing sources. It must returns a promise that must resolves with an objeckt in the next format
+`parse` is the main method for the parsing sources. It must returns a promise that must resolves with an object in the next format
 `{ bitcoinToUsd: 1, bitcoinToEur: 2, usdToEur: 3 }`
 
 `moduleName` - is field contain module name. It must be unique because use as a module id.
